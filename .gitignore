@@ -1,0 +1,13 @@
+# team-specific data never goes to the public repo
+skills/*/config.md
+skills/*/strategy/*.md
+!skills/*/strategy/README.md
+skills/*/log/*.md
+!skills/*/log/value-check-log.md
+!skills/*/log/disagreements.md
+skills/*/calibration/ratings/*.md
+!skills/*/calibration/ratings/README.md
+skills/*/calibration/runs/*.md
+!skills/*/calibration/runs/README.md
+*.skill
+.DS_Store

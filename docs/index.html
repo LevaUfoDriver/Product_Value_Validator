@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="value-check: an open Agent Skill that checks backlog tickets for shown value — five types of value + strategy link, traffic light, coaching questions, wording help. Works in Claude, Codex, Cursor and 40+ agents.">
+<meta property="og:title" content="value-check — does your backlog show value?">
+<meta property="og:description" content="Open Agent Skill: five types of value + strategy link, traffic-light report, coaching questions, wording help.">
+<style>img{max-width:100%}[hidden]{display:none!important}body{margin:0}</style>
+<title>value-check — does your backlog show value?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one left-aligned column, the live report table is the hero; six criteria as a grid; everything else quiet. */
+:root{
+  --bg:#F6F8F6; --bg-2:#ECF0EC; --fg:#15201C; --fg-2:#4F605A; --line:#CFD8D3;
+  --accent:#0F6E63; --accent-ink:#FFFFFF;
+  --g:#2E9E5B; --y:#D9A21B; --r:#D5473C; --n:#AEB8B3;
+  --display:"Sora",system-ui,sans-serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1512;--bg-2:#161E1A;--fg:#E6ECE8;--fg-2:#9DAAA3;--line:#2A3630;--accent:#4FBFAE;--accent-ink:#0F1512;--g:#4CC277;--y:#E5B53A;--r:#E5665B;--n:#5A6762;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1512;--bg-2:#161E1A;--fg:#E6ECE8;--fg-2:#9DAAA3;--line:#2A3630;--accent:#4FBFAE;--accent-ink:#0F1512;--g:#4CC277;--y:#E5B53A;--r:#E5665B;--n:#5A6762;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.55;padding-block:0 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--accent)}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.1;margin:0}
+h1{font-size:clamp(34px,5.2vw,58px);font-weight:700;letter-spacing:-.02em}
+h2{font-size:clamp(24px,3vw,32px);font-weight:600;margin-bottom:20px}
+h3{font-size:19px;font-weight:600}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-2)}
+nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:22px;flex-wrap:wrap}
+.brand{font-family:var(--mono);font-weight:500;font-size:16px;color:var(--fg);text-decoration:none}
+.navr{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.lang button{font:inherit;font-family:var(--mono);font-size:13px;padding:5px 12px;border:0;background:transparent;color:var(--fg-2);cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.btn{display:inline-block;font:inherit;font-weight:600;font-size:15px;padding:10px 18px;border-radius:8px;text-decoration:none;border:1px solid var(--line);color:var(--fg)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:focus-visible,.lang button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hero{display:grid;grid-template-columns:1fr;gap:28px;padding-block:28px 56px}
+.hero .lead{font-size:20px;color:var(--fg-2);max-width:62ch;margin-top:18px}
+.hero .ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.report{border:1px solid var(--line);border-radius:12px;background:var(--bg-2);padding:18px 18px 14px;min-width:0}
+.report .cap{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:12.5px;color:var(--fg-2);margin-bottom:12px;flex-wrap:wrap}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:9px 10px;border-top:1px solid var(--line);white-space:nowrap}
+th{font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-2);border-top:0}
+td.k{font-family:var(--mono);font-size:13.5px}
+td.t{white-space:normal;min-width:220px}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px}
+.g{background:var(--g)}.y{background:var(--y)}.r{background:var(--r)}.n{background:var(--n);opacity:.55}
+.v{font-weight:600}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--fg-2);margin-top:12px}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+section{padding-block:40px;border-top:1px solid var(--line)}
+.grid6{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.crit{padding:16px 16px 18px;border-radius:10px;background:var(--bg-2);min-width:0;display:flex;flex-direction:column;gap:8px}
+.crit .q{color:var(--fg-2);font-size:15.5px}
+.crit.six{border:1px solid var(--accent)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px}
+.cols > div{min-width:0;display:flex;flex-direction:column;gap:8px}
+.cols p{color:var(--fg-2)}
+.quote{border-left:3px solid var(--accent);padding:10px 16px;background:var(--bg-2);border-radius:0 8px 8px 0;font-size:15.5px;margin-top:10px}
+.quote .m{font-family:var(--mono);font-size:13px;color:var(--fg-2)}
+.install{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.ins{border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0;display:flex;flex-direction:column;gap:10px}
+.ins h3{font-size:16px}
+.ins p{color:var(--fg-2);font-size:15px}
+pre{margin:0;font-family:var(--mono);font-size:13px;background:var(--fg);color:var(--bg);padding:10px 12px;border-radius:6px;overflow-x:auto}
+.clients{font-family:var(--mono);font-size:13.5px;color:var(--fg-2);line-height:2;margin-top:18px}
+.clients b{color:var(--fg);font-weight:500}
+.loop ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px;color:var(--fg-2)}
+.loop ol b{color:var(--fg);font-weight:500}
+footer{padding-block:28px 0;border-top:1px solid var(--line);color:var(--fg-2);font-size:14.5px;display:flex;flex-direction:column;gap:6px}
+@media (min-width:900px){.hero{grid-template-columns:5fr 7fr;align-items:start}}
+@media (prefers-reduced-motion:no-preference){.lang button{transition:background .15s,color .15s}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <a class="brand" href="#">value-check</a>
+  <div class="navr">
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" id="lang-en" aria-pressed="true" onclick="setLang('en')">EN</button>
+      <button type="button" id="lang-ru" aria-pressed="false" onclick="setLang('ru')">RU</button>
+    </div>
+    <a class="btn" href="https://github.com/LevaUfoDriver/Product_Value_Validator">GitHub</a>
+  </div>
+</nav>
+
+<!-- ======================= EN ======================= -->
+<div data-lang="en">
+<div class="hero">
+  <div>
+    <p class="eyebrow">Agent Skill · Scrum · backlog</p>
+    <h1 style="margin-top:10px">Does your backlog show value, or just describe work?</h1>
+    <p class="lead">An open Agent Skill that reviews tickets against five types of value and a link to your goals. Traffic light, coaching questions, a wording you can paste back. Works in Claude, Codex, Cursor and 40+ other agents.</p>
+    <div class="ctas">
+      <a class="btn primary" href="https://github.com/LevaUfoDriver/Product_Value_Validator#install">Install</a>
+      <a class="btn" href="https://github.com/LevaUfoDriver/Product_Value_Validator/tree/main/examples">See a full report</a>
+    </div>
+  </div>
+  <div class="report">
+    <div class="cap"><span>/value-check · top of backlog · 5 tickets</span><span>example output</span></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Ticket</th><th>Com</th><th>Eff</th><th>Mkt</th><th>Cust</th><th>Fut</th><th>Strat</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td class="k">PLT-88</td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot y"></i></td><td><i class="dot r"></i></td><td class="v">🛠 Needs work</td></tr>
+        <tr><td class="k">APP-417</td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot y"></i></td><td><i class="dot n"></i></td><td><i class="dot r"></i></td><td class="v">🛠 Needs work</td></tr>
+        <tr><td class="k">APP-420</td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot y"></i></td><td><i class="dot n"></i></td><td><i class="dot r"></i></td><td class="v">🛠 Needs work</td></tr>
+        <tr><td class="k">APP-402</td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot g"></i></td><td><i class="dot n"></i></td><td><i class="dot g"></i></td><td class="v">✅ OK</td></tr>
+        <tr><td class="k">PLT-91</td><td><i class="dot n"></i></td><td><i class="dot g"></i></td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot g"></i></td><td class="v">✅ OK</td></tr>
+      </tbody>
+    </table></div>
+    <div class="legend"><span><i class="dot g"></i>named and justified</span><span><i class="dot y"></i>mentioned, not justified</span><span><i class="dot r"></i>should be there, isn't</span><span><i class="dot n"></i>not applicable</span></div>
+  </div>
+</div>
+
+<section>
+  <p class="eyebrow">Six criteria</p>
+  <h2 style="margin-top:8px">Each one is a question. If none can be answered, the ticket needs an exceptionally good reason to stay.</h2>
+  <div class="grid6">
+    <div class="crit"><h3>Commercial</h3><p class="q">How does this increase revenue or profit? Think: a line on a customer's invoice.</p></div>
+    <div class="crit"><h3>Efficiency</h3><p class="q">How does this save us money or time now? Fewer servers, fewer manual steps, fewer support calls.</p></div>
+    <div class="crit"><h3>Market</h3><p class="q">How does this attract new users or open a segment? Platforms, integrations, localisation.</p></div>
+    <div class="crit"><h3>Customer</h3><p class="q">How does this make existing customers more likely to stay? Usability, reliability, the things they ask for.</p></div>
+    <div class="crit"><h3>Future</h3><p class="q">What trouble or cost does this prevent later? Tech debt, research, security, upgrades.</p></div>
+    <div class="crit six"><h3>Strategy link</h3><p class="q">Which initiative, OKR, MBO or this quarter's goal does it serve, and how? Required for every ticket, tech debt included.</p></div>
+  </div>
+  <p style="color:var(--fg-2);margin-top:18px;max-width:70ch">The first five are Christiaan Verwijs' <a href="https://medium.com/the-liberators/five-types-of-value-84807deab1d">Five Types of Value</a> (The Liberators). The sixth is ours: value in general is not the same as value for us, now.</p>
+</section>
+
+<section>
+  <p class="eyebrow">What it does</p>
+  <h2 style="margin-top:8px">A coach, not an auditor</h2>
+  <div class="cols">
+    <div>
+      <h3>One ticket</h3>
+      <p>What's good first. Then six lights, each justified with a quote from the ticket, a verdict, one to four questions for the author, and a draft "Value" section with gaps marked.</p>
+      <div class="quote"><div class="m">Customer · 🟡</div>"users are asking for it" — not said who, how many, or how we'll know it worked.</div>
+    </div>
+    <div>
+      <h3>A slice of the backlog</h3>
+      <p>Top 5–20 items as a table, anomalies first. A summary of what the team most often leaves out. One key question per anomaly. Bring it to refinement.</p>
+      <div class="quote"><div class="m">Summary</div>Strategy link missing on 3 of 5. Both folder epics ("Tech debt Q4", "Bugs") count as no link.</div>
+    </div>
+    <div>
+      <h3>Wording help</h3>
+      <p>The author answers in their own words. The skill turns it into two or three plain sentences using only what they said, marks the gaps, and re-scores.</p>
+      <div class="quote"><div class="m">From your words</div>Agency managers lose up to an hour of report work when a tab closes; they write to support, angry — [clarify: how many a week]. After autosave, work is not lost.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Install</p>
+  <h2 style="margin-top:8px">A folder with a SKILL.md. Drop it into any agent that speaks Agent Skills.</h2>
+  <div class="install">
+    <div class="ins"><h3>Claude.ai / desktop</h3><p>Download the <code>.skill</code> from Releases, upload under Settings → Capabilities. Team and Enterprise owners can publish it to everyone from Admin settings.</p></div>
+    <div class="ins"><h3>Claude Code</h3><pre>/plugin marketplace add LevaUfoDriver/Product_Value_Validator
+/plugin install value-check</pre><p>Or copy <code>skills/value-check</code> into <code>.claude/skills/</code>.</p></div>
+    <div class="ins"><h3>Everything else</h3><p>Copy the folder into your client's skills directory. Where that is for each client: <a href="https://agentskills.io/clients">agentskills.io/clients</a>.</p></div>
+  </div>
+  <p class="clients"><b>Works with</b> Claude · Claude Code · ChatGPT &amp; Codex · Cursor · Gemini CLI · GitHub Copilot · VS Code · Goose · OpenCode · OpenHands · Amp · Kiro · Roo Code · Junie · and the rest of the <a href="https://agentskills.io/clients">Agent Skills clients</a></p>
+</section>
+
+<section class="loop">
+  <p class="eyebrow">Does it work?</p>
+  <h2 style="margin-top:8px">The feedback loop is built in</h2>
+  <div class="cols">
+    <div>
+      <ol>
+        <li><b>Every run is logged</b> — six lights, verdict, who, first run or repeat. <code>/value-check stats</code> shows whether the share of tickets passing on the first try is growing. That's the culture metric.</li>
+        <li><b>Disagree in one line.</b> "Strategy should be 🟡 because…" is recorded for the skill owner. The skill never edits its own rubric.</li>
+        <li><b>Golden set.</b> Two or three people rate 15–30 real tickets independently. <code>/value-check calibrate</code> shows where people disagree with each other (rubric is vague) and where the skill disagrees with them (skill is wrong).</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Tech debt is not punished</h3>
+      <p>Refactoring, infrastructure and spikes are scored on Efficiency and Future value only; Commercial, Market and Customer go grey, not red. "The code is bad" is still yellow. "Any change here takes three days, and Q1's initiative needs two features in this module" is green. The strategy link is required for everyone.</p>
+      <h3 style="margin-top:10px">Two layers of goals</h3>
+      <p>Long-term strategy and this quarter's goals are kept separately; numbers are optional. Asked for once, kept as a digest, with a freshness check.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Model: <a href="https://medium.com/the-liberators/five-types-of-value-84807deab1d">Five Types of Value</a>, Christiaan Verwijs, The Liberators. Increment: <a href="https://www.scrum.org/resources/what-is-an-increment">Scrum.org</a>.</p>
+  <p>Skill by Levon Goncharov · <a href="https://github.com/LevaUfoDriver/Product_Value_Validator">github.com/LevaUfoDriver/Product_Value_Validator</a> · MIT · built with Claude</p>
+</footer>
+</div>
+
+<!-- ======================= RU ======================= -->
+<div data-lang="ru" hidden>
+<div class="hero">
+  <div>
+    <p class="eyebrow">Agent Skill · Scrum · бэклог</p>
+    <h1 style="margin-top:10px">Твой бэклог показывает ценность или просто описывает работу?</h1>
+    <p class="lead">Открытый Agent Skill, который проверяет задачи по пяти типам ценности и связи с целями. Светофор, вопросы автору, формулировка, которую можно вставить обратно. Работает в Claude, Codex, Cursor и ещё 40+ агентах.</p>
+    <div class="ctas">
+      <a class="btn primary" href="https://github.com/LevaUfoDriver/Product_Value_Validator#установка">Установить</a>
+      <a class="btn" href="https://github.com/LevaUfoDriver/Product_Value_Validator/tree/main/examples">Полный отчёт</a>
+    </div>
+  </div>
+  <div class="report">
+    <div class="cap"><span>/value-check · топ бэклога · 5 задач</span><span>пример вывода</span></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Задача</th><th>Ком</th><th>Эфф</th><th>Рын</th><th>Кли</th><th>Буд</th><th>Страт</th><th>Вердикт</th></tr></thead>
+      <tbody>
+        <tr><td class="k">PLT-88</td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot y"></i></td><td><i class="dot r"></i></td><td class="v">🛠 Доработать</td></tr>
+        <tr><td class="k">APP-417</td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot y"></i></td><td><i class="dot n"></i></td><td><i class="dot r"></i></td><td class="v">🛠 Доработать</td></tr>
+        <tr><td class="k">APP-420</td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot y"></i></td><td><i class="dot n"></i></td><td><i class="dot r"></i></td><td class="v">🛠 Доработать</td></tr>
+        <tr><td class="k">APP-402</td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot g"></i></td><td><i class="dot n"></i></td><td><i class="dot g"></i></td><td class="v">✅ Норм</td></tr>
+        <tr><td class="k">PLT-91</td><td><i class="dot n"></i></td><td><i class="dot g"></i></td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot n"></i></td><td><i class="dot g"></i></td><td class="v">✅ Норм</td></tr>
+      </tbody>
+    </table></div>
+    <div class="legend"><span><i class="dot g"></i>названа и обоснована</span><span><i class="dot y"></i>упомянута без обоснования</span><span><i class="dot r"></i>должна быть, но нет</span><span><i class="dot n"></i>не применимо</span></div>
+  </div>
+</div>
+
+<section>
+  <p class="eyebrow">Шесть критериев</p>
+  <h2 style="margin-top:8px">Каждый — это вопрос. Если ни на один нет ответа, задаче нужна исключительно веская причина оставаться в бэклоге.</h2>
+  <div class="grid6">
+    <div class="crit"><h3>Коммерческая</h3><p class="q">Как это увеличит выручку или прибыль? Тест: это строка в счёте клиенту?</p></div>
+    <div class="crit"><h3>Эффективность</h3><p class="q">Как это сэкономит деньги или время сейчас? Меньше серверов, ручных шагов, обращений в поддержку.</p></div>
+    <div class="crit"><h3>Рыночная</h3><p class="q">Как это привлечёт новых пользователей или откроет сегмент? Платформы, интеграции, локализация.</p></div>
+    <div class="crit"><h3>Клиентская</h3><p class="q">Как это повысит шанс, что существующие клиенты останутся? Удобство, надёжность, то, что просят.</p></div>
+    <div class="crit"><h3>Будущая</h3><p class="q">Какие проблемы или расходы это предотвратит потом? Техдолг, исследования, безопасность, обновления.</p></div>
+    <div class="crit six"><h3>Связь со стратегией</h3><p class="q">Какой инициативе, OKR, MBO или цели квартала это служит и как? Обязательно для всех задач, включая техдолг.</p></div>
+  </div>
+  <p style="color:var(--fg-2);margin-top:18px;max-width:70ch">Первые пять — <a href="https://medium.com/the-liberators/five-types-of-value-84807deab1d">Five Types of Value</a> Кристиана Вервейса (The Liberators). Шестой — наш: ценность вообще и ценность для нас сейчас — не одно и то же.</p>
+</section>
+
+<section>
+  <p class="eyebrow">Что умеет</p>
+  <h2 style="margin-top:8px">Коуч, а не аудитор</h2>
+  <div class="cols">
+    <div>
+      <h3>Одна задача</h3>
+      <p>Сначала что хорошо. Потом шесть светофоров, каждый с цитатой из задачи, вердикт, один–четыре вопроса автору и черновик раздела «Ценность» с помеченными пропусками.</p>
+      <div class="quote"><div class="m">Клиентская · 🟡</div>«пользователи просят» — не сказано, кто, сколько и как поймём, что сработало.</div>
+    </div>
+    <div>
+      <h3>Срез бэклога</h3>
+      <p>Топ 5–20 задач таблицей, аномалии сверху. Сводка, чего команда чаще всего не описывает. По одному вопросу на аномалию. Можно нести на refinement.</p>
+      <div class="quote"><div class="m">Сводка</div>Привязки к стратегии нет у 3 из 5. Оба эпика-папки («Техдолг Q4», «Баги») за привязку не считаются.</div>
+    </div>
+    <div>
+      <h3>Помощь в формулировках</h3>
+      <p>Автор отвечает своими словами. Скилл превращает это в два–три нормальных предложения только из сказанного, помечает пропуски и пересчитывает светофор.</p>
+      <div class="quote"><div class="m">Из твоих слов</div>Менеджеры из агентств теряют до часа работы над отчётом, если закрыть вкладку; пишут в саппорт, злые — [уточнить: сколько в неделю]. После автосохранения работа не пропадает.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Установка</p>
+  <h2 style="margin-top:8px">Папка с SKILL.md. Кладётся в любой агент, который понимает Agent Skills.</h2>
+  <div class="install">
+    <div class="ins"><h3>Claude.ai / desktop</h3><p>Скачать <code>.skill</code> из Releases, загрузить в Settings → Capabilities. В Team и Enterprise владелец организации публикует на всех из админки.</p></div>
+    <div class="ins"><h3>Claude Code</h3><pre>/plugin marketplace add LevaUfoDriver/Product_Value_Validator
+/plugin install value-check-ru</pre><p>Или скопировать <code>skills/value-check-ru</code> в <code>.claude/skills/</code>.</p></div>
+    <div class="ins"><h3>Всё остальное</h3><p>Скопировать папку в директорию скиллов клиента. Где она у каждого: <a href="https://agentskills.io/clients">agentskills.io/clients</a>.</p></div>
+  </div>
+  <p class="clients"><b>Работает с</b> Claude · Claude Code · ChatGPT &amp; Codex · Cursor · Gemini CLI · GitHub Copilot · VS Code · Goose · OpenCode · OpenHands · Amp · Kiro · Roo Code · Junie · и остальными <a href="https://agentskills.io/clients">клиентами Agent Skills</a></p>
+</section>
+
+<section class="loop">
+  <p class="eyebrow">А оно работает?</p>
+  <h2 style="margin-top:8px">Обратная связь встроена</h2>
+  <div class="cols">
+    <div>
+      <ol>
+        <li><b>Каждый прогон логируется</b> — шесть светофоров, вердикт, кто, первый прогон или повтор. <code>/value-check stats</code> показывает, растёт ли доля задач, проходящих с первого раза. Это метрика культуры.</li>
+        <li><b>Не согласен — одна строка.</b> «Стратегия должна быть 🟡, потому что…» записывается для владельца скилла. Скилл свою рубрику не правит.</li>
+        <li><b>Золотой набор.</b> Два–три человека независимо размечают 15–30 реальных задач. <code>/value-check calibrate</code> показывает, где люди расходятся между собой (рубрика расплывчата) и где скилл расходится с ними (скилл ошибается).</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Техдолг не наказывается</h3>
+      <p>Рефакторинг, инфраструктура и spike оцениваются только по эффективности и будущей ценности; коммерческая, рыночная и клиентская — серые, не красные. «Код плохой» — по-прежнему жёлтый. «Любая правка здесь — три дня, а в Q1 по инициативе нужны две фичи в этом модуле» — зелёный. Привязка к стратегии обязательна для всех.</p>
+      <h3 style="margin-top:10px">Два слоя целей</h3>
+      <p>Стратегия и цели квартала хранятся отдельно; цифры не обязательны. Спрашивается один раз, держится выжимкой, следит за свежестью.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Модель: <a href="https://medium.com/the-liberators/five-types-of-value-84807deab1d">Five Types of Value</a>, Кристиан Вервейс, The Liberators. Инкремент: <a href="https://www.scrum.org/resources/what-is-an-increment">Scrum.org</a>.</p>
+  <p>Скилл: Левон Гончаров · <a href="https://github.com/LevaUfoDriver/Product_Value_Validator">github.com/LevaUfoDriver/Product_Value_Validator</a> · MIT · собран вместе с Claude</p>
+</footer>
+</div>
+</div>
+
+<script>
+function setLang(l){
+  document.querySelectorAll('[data-lang]').forEach(function(el){el.hidden = el.getAttribute('data-lang')!==l;});
+  document.getElementById('lang-en').setAttribute('aria-pressed', l==='en');
+  document.getElementById('lang-ru').setAttribute('aria-pressed', l==='ru');
+  document.documentElement.lang = l;
+  try{localStorage.setItem('vc-lang',l);}catch(e){}
+}
+(function(){
+  var l=null; try{l=localStorage.getItem('vc-lang');}catch(e){}
+  if(!l){ l=(navigator.language||'').toLowerCase().indexOf('ru')===0?'ru':'en'; }
+  if(location.hash==='#ru') l='ru'; if(location.hash==='#en') l='en';
+  setLang(l);
+})();
+</script>
+
+</body>
+</html>

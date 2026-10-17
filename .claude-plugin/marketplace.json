@@ -1,0 +1,30 @@
+{
+  "name": "value-check",
+  "owner": { "name": "Levon Goncharov", "url": "https://github.com/LevaUfoDriver" },
+  "metadata": {
+    "description": "Backlog value validator: five types of value (The Liberators) + strategy link, traffic-light report, coaching questions, wording help.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "value-check",
+      "description": "Checks backlog items for shown value (EN). Five types of value + strategy link, traffic light, coaching questions, wording help, calibration loop.",
+      "source": "./",
+      "skills": ["./skills/value-check"],
+      "version": "1.0.0",
+      "author": { "name": "Levon Goncharov" },
+      "license": "MIT",
+      "keywords": ["scrum", "backlog", "product", "value", "jira", "refinement"]
+    },
+    {
+      "name": "value-check-ru",
+      "description": "Валидатор ценности задач бэклога (RU). Пять типов ценности + связь со стратегией, светофор, вопросы автору, помощь в формулировках, калибровка.",
+      "source": "./",
+      "skills": ["./skills/value-check-ru"],
+      "version": "1.0.0",
+      "author": { "name": "Levon Goncharov" },
+      "license": "MIT",
+      "keywords": ["scrum", "backlog", "product", "value", "jira", "refinement"]
+    }
+  ]
+}

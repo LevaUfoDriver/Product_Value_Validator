@@ -1,0 +1,1 @@
+Raters' personal files: one per person, `<name>.md`, filled via `/value-check rate` or by hand in the same format as `golden-set.md`. Each rater edits only their own. The skill owner merges them into `golden-set.md` with `/value-check assemble`.
