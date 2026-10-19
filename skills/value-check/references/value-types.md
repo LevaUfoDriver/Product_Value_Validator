@@ -12,7 +12,7 @@ A digest of the "Five Types of Value" model (Christiaan Verwijs, The Liberators,
 
 **An item with no value type demands an exceptionally strong justification.** This is the skill's main argument: if a ticket doesn't fit any type, the author has to explain why it is in the backlog.
 
-**Increment.** An increment is a concrete, verified, usable step toward the Product Goal that meets the Definition of Done. Value is shown through an increment, not through a report of work done. So a good ticket describes not only "what we'll do" but also "what changes for the stakeholder once it's done" — and that is exactly what gets checked.
+**Increment.** An increment is a concrete, verified, usable step toward the Product Goal that meets the Definition of Done. Value is shown through an increment, not through a report of work done. So a good ticket describes not only "what we'll do" but also "what changes for the stakeholder once it's done" - and that is exactly what gets checked.
 
 ---
 
@@ -26,7 +26,7 @@ A digest of the "Five Types of Value" model (Christiaan Verwijs, The Liberators,
 
 **🟢 looks like:** "Customer X signs a contract worth N on the condition of SSO support; the feature is in the deal scope." "Paid export option: per the survey, 12% of active teams are willing to pay +$5/month."
 **🟡 looks like:** "This will help sales." "Customers asked for it, we could monetise it."
-**Typical mistake:** confusing it with Customer value — nobody pays for the feature directly, but it retains. If the money isn't directly visible, it's more likely type 4.
+**Typical mistake:** confusing it with Customer value - nobody pays for the feature directly, but it retains. If the money isn't directly visible, it's more likely type 4.
 
 ## 2. Efficiency value (Efficiency Value)
 
@@ -78,7 +78,7 @@ A digest of the "Five Types of Value" model (Christiaan Verwijs, The Liberators,
 
 ### Compliance is not a separate type
 
-Regulatory compliance, certification, protocols are not value in themselves but a means. Dig into *why* it is valuable: the customer pays for compliance → Commercial; needed so the customer doesn't leave → Customer/Market; security and protection from damage → Future. If it's simply a quality rule, its place is in the Definition of Done, not in a separate ticket. When checking a compliance ticket, ask the author "which of the values does this secure", and don't assign red just because the text says "regulator requirement" — that's yellow with a question.
+Regulatory compliance, certification, protocols are not value in themselves but a means. Dig into *why* it is valuable: the customer pays for compliance → Commercial; needed so the customer doesn't leave → Customer/Market; security and protection from damage → Future. If it's simply a quality rule, its place is in the Definition of Done, not in a separate ticket. When checking a compliance ticket, ask the author "which of the values does this secure", and don't assign red just because the text says "regulator requirement" - that's yellow with a question.
 
 ---
 
@@ -96,8 +96,8 @@ Regulatory compliance, certification, protocols are not value in themselves but 
 3. The strategy document / digest (`strategy/strategy-digest.md`): does the ticket semantically match an initiative or a job family.
 4. The ticket text: an explicit mention of a goal/initiative/OKR/job family.
 
-**🟢:** an explicit link (a reference to an initiative or a goal, a named job family) **and** an impact estimate — a number, a deadline, a share, or at least a clear cause-and-effect link ("closes about a third of the KR 'onboarding time < 1 day'").
-**🟡:** a link exists, but it's indirect or has no estimate ("belongs to the 'Enterprise' initiative", "for the Analyst job family" — without explaining what will change).
+**🟢:** an explicit link (a reference to an initiative or a goal, a named job family) **and** an impact estimate - a number, a deadline, a share, or at least a clear cause-and-effect link ("closes about a third of the KR 'onboarding time < 1 day'").
+**🟡:** a link exists, but it's indirect or has no estimate ("belongs to the 'Enterprise' initiative", "for the Analyst job family" - without explaining what will change).
 **🔴:** no hierarchy, no mention, no semantic match with the strategy.
 
 **For technical tickets** the link usually sounds like "enables initiative Y" or "without this, Z is impossible by the deadline". That's enough for 🟡; with an estimate (deadlines, risk, money) it's 🟢. The link requirement for technical tickets is the same as for product ones.
